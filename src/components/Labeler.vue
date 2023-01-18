@@ -128,7 +128,7 @@
         prepareData(rows) {
             let _data = [];
             for (let price of rows) {
-                 price = price.split(csvSplitBy);
+                 price = price.split(this.csvSplitBy);
                 let [time, open, high, low, close, volume, closeTime, assetVolume,
                     trades, buyBaseVolume, buyAssetVolume, ignored] = price;
                 time = (new Date(time)).getTime()
@@ -154,13 +154,13 @@
             reader.onload = (res) => {
                 console.log("saving...")
                 let data = res.target.result.split("\n")
-                data[0] += `${csvSplitBy}label`
+                data[0] += `${this.csvSplitBy}label`
                 let point = this.breakPoints.shift();
                 for(let i = 1; i<data.length; i++){
                     if(i - 1 > point.index && this.breakPoints.length)
                         point = this.breakPoints.shift()
                     
-                    data[i] += `${csvSplitBy}${point.value}`
+                    data[i] += `${this.csvSplitBy}${point.value}`
                 }
                 this.downloadFile(data.join("\n"))
             };
