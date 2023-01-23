@@ -1,7 +1,21 @@
 <template>
     <div>
-        <div v-if="!klines.length" style="border-style:solid">
-            <input type="file" ref="doc" @change="readFile()" />
+        <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 1rem;">
+
+            <div v-if="!klines.length">
+            <label class="custom-file-upload">
+                    New File
+                    <input type="file" ref="doc" @change="readFile()" />
+                </label>
+            </div>
+
+            <div v-if="!klines.length" style="margin-left: 1rem">
+                <label class="custom-file-upload">
+                    Load File
+                    <input @change="load()" ref="lod" type="file" />
+                </label>
+            </div>
+            
         </div>
         
         <div v-if="chart">
@@ -22,11 +36,11 @@
                 ref="tradingVue"></trading-vue>            
         </div>
 
-        <div v-if="loading" style="position: absolute; top:0;left:0;right:0;bottom:0; background: '#eee'">
+        <div v-if="loading" style="position: absolute; top:0;left:0;right:0;bottom:0; background: '#eeeeee'">
             
         </div>
 
-        <div>
+        <div v-if="klines.length && breakPoints.length">
             <button @click="save()">Save</button>
         </div>
 
@@ -93,7 +107,6 @@
                 this.spliters.data.push(data);
                 this.chart.set("onchart.spliters", this.spliters)
 
-                console.log(this.breakPoints)
             }
             if(e.code == 'Backspace' || e.key == 'Backspace') {
                 this.spliters.data.pop();
@@ -125,14 +138,23 @@
                 this.loading = false;
             }, 2000)
         },
-        prepareData(rows) {
+        prepareData(rows, breakPoints = false) {
             let _data = [];
+            let index = 0;
+            let tempValue = null;
+            let tempTime = null;
             for (let price of rows) {
-                 price = price.split(this.csvSplitBy);
+                price = price.split(this.csvSplitBy);
                 let [time, open, high, low, close, volume, closeTime, assetVolume,
-                    trades, buyBaseVolume, buyAssetVolume, ignored] = price;
+                        trades, buyBaseVolume, buyAssetVolume, ignored, breakPoint] = price;
+
+                // if(breakPoints)
+                //     [time, open, high, low, close, volume, closeTime, assetVolume,
+                //         trades, buyBaseVolume, buyAssetVolume, ignored] = price;
+                    
                 time = (new Date(time)).getTime()
                 if( isNaN(open)) continue
+
                 _data.push([
                         time,
                         parseFloat(open),
@@ -140,11 +162,53 @@
                         parseFloat(low),
                         parseFloat(close),
                         parseFloat(volume)]);
+                
+                if(breakPoints){                    
+                    if(tempValue && tempValue != breakPoint) {
+                        let text = "";
+                        if(tempValue == "1") text = "Bulls";
+                        if(tempValue == "0") text = "Sideways";
+                        if(tempValue == "-1") text = "Bears";
+                        let bpData = [
+                            tempTime,
+                            text
+                        ]
+                        this.breakPoints.push({index: index - 1, value: tempValue })
+                        this.spliters.data.push(bpData);
+                    }
+
+                    tempValue = breakPoint;
+                    tempTime = time;
+                }
+                index++;
             }
+
             return _data;
         },
         on_button_click(event) {
             console.log(event)
+        },
+        load() {
+            this.loading = true;
+            this.file = this.$refs.lod.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = (res) => {
+                let data = res.target.result.split("\n")
+                this.klines = this.prepareData(data, true);
+                this.chart.set('chart.data', this.klines);
+                setTimeout(() => {
+                    this.chart.add('onchart', this.spliters)
+                    const index = this.breakPoints[this.breakPoints.length - 1].index;
+                    // this.chart.set("onchart.spliters", this.spliters);
+                    this.$refs.tradingVue.setRange(index, index + 100);
+                    this.loading = false;
+                }, 2000)
+            };
+            reader.onerror = (err) => console.log(err);
+            reader.readAsText(this.file);
+
+            
         },
         save() {
             // load file
@@ -154,12 +218,22 @@
             reader.onload = (res) => {
                 console.log("saving...")
                 let data = res.target.result.split("\n")
-                data[0] += `${this.csvSplitBy}label`
+                let replace = true;
+                // check if has label field
+                if(!data[0].includes(`${this.csvSplitBy}label`)) {
+                    data[0] += `${this.csvSplitBy}label`
+                    replace = false;
+                }
                 let point = this.breakPoints.shift();
-                for(let i = 1; i<data.length; i++){
+                for(let i = 1; i<(data.length - 1); i++){
                     if(i - 1 > point.index && this.breakPoints.length)
                         point = this.breakPoints.shift()
                     
+                    if(replace) {
+                        data[i] = data[i].split(this.csvSplitBy);
+                        data[i].pop();
+                        data[i] = data[i].join(this.csvSplitBy);
+                    }
                     data[i] += `${this.csvSplitBy}${point.value}`
                 }
                 this.downloadFile(data.join("\n"))
@@ -191,6 +265,15 @@
   
   <!-- Add "scoped" attribute to limit CSS to this component only -->
   <style scoped>
+input[type="file"] {
+    display: none;
+}
 
+.custom-file-upload {
+    border: 1px solid #ccc;
+    display: inline-block;
+    padding: 6px 12px;
+    cursor: pointer;
+}
   </style>
   
