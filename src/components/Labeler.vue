@@ -1,15 +1,15 @@
 <template>
     <div>
-        <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 1rem;">
+        <div v-if="!klines.length" style="display: flex; flex-direction: row; align-items: center; justify-content: center; width: 100%; margin-bottom: 1rem; padding-top: 0.5rem;">
 
-            <div v-if="!klines.length">
+            <div>
             <label class="custom-file-upload">
                     New File
                     <input type="file" ref="doc" @change="readFile()" />
                 </label>
             </div>
 
-            <div v-if="!klines.length" style="margin-left: 1rem">
+            <div style="margin-left: 1rem">
                 <label class="custom-file-upload">
                     Load File
                     <input @change="load()" ref="lod" type="file" />
@@ -18,6 +18,13 @@
             
         </div>
         
+
+        <div v-if="klines.length" style="margin-bottom: 1rem; padding-top: 1.3rem;">
+            <label>
+                    {{ file.name }}
+                </label>
+            </div>
+
         <div v-if="chart">
                 <trading-vue
                 :data="chart" 
@@ -29,8 +36,8 @@
                 :colorWickDw="'#F02D3A'"
                 :colorTitle="'#FCF6F5'"
                 :colorText="'#FCF6F5'"
-                :width="1900"
-                :height="800"
+                :width="width"
+                :height="height"
                 :titleTxt="''"
                 :indexBased="true"
                 ref="tradingVue"></trading-vue>            
@@ -40,7 +47,7 @@
             
         </div>
 
-        <div v-if="klines.length && breakPoints.length">
+        <div style="margin-top: 0.5rem" v-if="klines.length && breakPoints.length">
             <button @click="save()">Save</button>
         </div>
 
@@ -61,6 +68,8 @@
     data() {
         return {
             file: null,
+            height: window.innerHeight - 64 - 32 - 16,
+            width: window.innerWidth - 16,
             klines: [],
             done: false,
             chart: new DataCube({ ohlcv: [], onchart: [], offchart: [] }),
