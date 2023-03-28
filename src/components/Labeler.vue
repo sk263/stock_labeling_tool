@@ -260,7 +260,6 @@
             // Add file content in the object URL
             link.href = URL.createObjectURL(file);
 
-            debugger
             // Add file name
             link.download = "LABELED-" + this.file.name;
 
