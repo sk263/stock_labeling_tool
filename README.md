@@ -5,9 +5,11 @@ This software is designed to help users label stock charts quickly and efficient
 ## Usage
 To use this software, simply open the application in your web browser. Once the application is loaded, you can use the arrow keys to label different parts of the chart.
 
-Arrow Up: Label chart as bullish (1)
-Arrow Right: Label part of chart as sideways (0)
-Arrow Down: Label part of chart as bearish (-1)
+- Arrow Up: Label chart as bullish (1)
+- Arrow Right: Label part of chart as sideways (0)
+- Arrow Down: Label part of chart as bearish (-1)
+
+
 To load a new chart, click the "New Chart" button and select the .csv file containing the chart data in the format below. Once the chart is loaded, you can use the arrow keys to label it.
 
 To save a labeled chart, click the "Save Chart" button. The labeled chart will be saved as a .csv file with an additional "Label" column that marks the direction of price.
