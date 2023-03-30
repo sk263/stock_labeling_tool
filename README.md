@@ -19,12 +19,26 @@ To load a previously labeled chart, click the "Load Chart" button and select the
 ## Chart Data Format
 The chart data should be in .csv format with the following columns:
 
-Time (Unix timestamp in milliseconds)
-Open
-High
-Low
-Close
-Volume
+```
+[
+  1620921600000,  // Open time in milliseconds
+  "39223.47000000",  // Open price
+  "39790.01000000",  // High price
+  "38968.22000000",  // Low price
+  "39790.01000000",  // Close price
+  "59457.41441700",  // Volume of the asset traded during the candlestick period
+  1621007999999,  // Close time in milliseconds
+  "2348363057.38886900",  // Quote asset volume
+  2840,  // Number of trades
+  "29244.61938500",  // Taker buy base asset volume
+  "1157983211.79127868",  // Taker buy quote asset volume
+  "0"  // Ignore
+]
+```
+
+This format of data can be fetched from Binance API
+
+
 The columns should be in the order listed above, and each row should represent a single candlestick/bar of the chart. For labeled charts, there should be an additional "Label" column that marks the direction of price (-1 for bearish, 0 for sideways, and 1 for bullish).
 
 ## Limitations
