@@ -49,7 +49,7 @@ Please note that this software is intended for educational and demonstration pur
 npm install
 ```
 
-### Compiles and hot-reloads for development
+### Compiles and hot-reloads for development or use
 ```
 npm run serve
 ```
