@@ -19,22 +19,11 @@ To load a previously labeled chart, click the "Load Chart" button and select the
 ## Chart Data Format
 The chart data should be in .csv format with the following columns:
 
-```
-[
-  1620921600000,  // Open time in milliseconds
-  "39223.47000000",  // Open price
-  "39790.01000000",  // High price
-  "38968.22000000",  // Low price
-  "39790.01000000",  // Close price
-  "59457.41441700",  // Volume of the asset traded during the candlestick period
-  1621007999999,  // Close time in milliseconds
-  "2348363057.38886900",  // Quote asset volume
-  2840,  // Number of trades
-  "29244.61938500",  // Taker buy base asset volume
-  "1157983211.79127868",  // Taker buy quote asset volume
-  "0"  // Ignore
-]
-```
+| timestamp           | open       | high       | low        | close      | volume           | close_time    | quote_av       | trades | tb_base_av      | tb_quote_av    | ignore |
+|---------------------|------------|------------|------------|------------|------------------|---------------|----------------|--------|-----------------|----------------|--------|
+| 2019-09-29 04:00:00 | 0.03103000 | 0.04147000 | 0.03103000 | 0.03986000 | 889029.20000000  | 1569729899999 | 34697.84143400 | 134    | 518219.10000000 | 20344.21056600 | 0      |
+| 2019-09-29 04:05:00 | 0.03999000 | 0.04350000 | 0.03918000 | 0.04330000 | 1073974.40000000 | 1569730199999 | 43808.82939100 | 184    | 435028.60000000 | 17922.45386300 | 0      |
+|                     |            |            |            |            |                  |               |                |        |                 |                |        |
 
 This format of data can be fetched from Binance API
 
