@@ -114,12 +114,34 @@
                         ]
                 
                 this.spliters.data.push(data);
-                this.chart.set("onchart.spliters", this.spliters)
+                
 
+                this.spliters.data = this.spliters.data.filter((elem, index, self) => 
+                    index === self.findIndex(t => t[0] === elem[0])
+                );
+                this.breakPoints = this.breakPoints.filter((elem, index, self) => 
+                    index === self.findIndex(t => t.index === elem.index)
+                );
+
+                this.breakPoints.sort((a, b) => a.index - b.index);
+                this.spliters.data.sort((a, b) => a[0] - b[0]);
+
+                // this.spliters.data=[];
+                // this.chart.set("onchart.spliters", this.spliters)
+                // this.spliters.data = temp;
+                // this.chart.set("onchart.spliters", this.spliters)
+                // console.log(this.spliters.data.length);
+                // console.log(this.spliters.data.length);
             }
             if(e.code == 'Backspace' || e.key == 'Backspace') {
-                this.spliters.data.pop();
-                this.breakPoints.pop()
+                const cursor = this.$refs.tradingVue.getCursor()
+                // cursor.t && cursor.i
+                this.spliters.data = this.spliters.data.filter(item => item[0] !== cursor.t);
+                this.breakPoints = this.breakPoints.filter(item => item.index !== cursor.i);
+
+                // console.log(this.spliters.data);
+                // console.log(this.breakPoints);
+
                 this.chart.set("onchart.spliters", this.spliters)
             }
         }
@@ -182,7 +204,7 @@
                             tempTime,
                             text
                         ]
-                        this.breakPoints.push({index: index - 1, value: tempValue })
+                        this.breakPoints.push({index: index - 1, value: tempValue });
                         this.spliters.data.push(bpData);
                     }
 
@@ -222,7 +244,12 @@
         save() {
             // load file
             const reader = new FileReader();
-            
+
+            this.breakPoints = this.breakPoints.filter((elem, index, self) => 
+                index === self.findIndex(t => t.index === elem.index)
+            );
+
+            this.breakPoints.sort((a, b) => a.index - b.index);
             this.content = "check the console for file output";
             reader.onload = (res) => {
                 console.log("saving...")
